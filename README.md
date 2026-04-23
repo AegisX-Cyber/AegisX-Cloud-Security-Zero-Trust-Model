@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="Logos/AegisX.jpeg" width="200" />
+<img src="Logos/AegisX.jpeg" width="300" highet="200"/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <img src="Logos/Cloud-GCP.jpeg" width="300" highet="200" />
 
