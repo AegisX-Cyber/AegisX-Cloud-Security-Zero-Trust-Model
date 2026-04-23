@@ -17,7 +17,7 @@
 ---
 </div>
 
-## 📌 Overview
+## Overview
 
 An internal secure portal protected by **Google Identity-Aware Proxy (IAP)** and **IAM**.  
 Every request is verified before it reaches the application — no VPN, no IP whitelisting.
