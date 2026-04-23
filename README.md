@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="Logos/AegisX.jpeg" width="160" />
+<img src="Logos/AegisX.jpeg" width="200" />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<img src="Logos/Cloud-GCP.jpeg" width="300" />
+<img src="Logos/Cloud-GCP.jpeg" width="300" highet="200" />
 
 <br/><br/>
 
@@ -23,24 +23,65 @@ An internal secure portal protected by **Google Identity-Aware Proxy (IAP)** and
 Every request is verified before it reaches the application — no VPN, no IP whitelisting.
 
 ---
+## The Portal in Case of Authorized Acess and Unauthorized access
+
+### ✅ Authorized Access — Zero Trust Dashboard
+![Portal](Zero-Trust-Portal.jpeg)
+
+<br/>
+
+### ⛔ Unauthorized Access — Blocked by IAP
+![Denied](Deny%20for%20the%20Unzuthrized%20Acess.png)
 
 ## 🏗️ Architecture
-Internet
-│
-▼
-[ HTTPS Load Balancer ]        ← Only entry point
-│
-▼
-[ Identity-Aware Proxy ]       ← Google login enforced here
-│
-├── ✗ Unauthorized → Blocked immediately
-│
-▼
-[ Cloud Run — Flask App ]      ← JWT verified + Role checked
-│
-├── Admin  → Full access
-└── Viewer → Limited access
----
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                          INTERNET                           │
+│                      (Any User / Device)                    │
+└──────────────────────────┬──────────────────────────────────┘
+                           │ HTTPS Request
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│              🌐 GOOGLE CLOUD LOAD BALANCER                  │
+│                   IP: 35.244.186.19                         │
+│              Only public entry point to the app             │
+└──────────────────────────┬──────────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│              🔐 IDENTITY-AWARE PROXY  (IAP)                 │
+│                                                             │
+│   ┌─────────────────────┐    ┌───────────────────────────┐ │
+│   │  Not in IAM list?   │    │    In IAM list?            │ │
+│   │                     │    │                            │ │
+│   │  ✗ ACCESS DENIED    │    │  ✓ JWT Token Issued        │ │
+│   └─────────────────────┘    └────────────┬──────────────┘ │
+└────────────────────────────────────────────┼────────────────┘
+                                             │ Signed JWT
+                                             ▼
+┌─────────────────────────────────────────────────────────────┐
+│                🐍 CLOUD RUN — FLASK APP                     │
+│                                                             │
+│   1. Verify JWT signature (ES256)                           │
+│   2. Extract user identity & role                           │
+│   3. Enforce RBAC                                           │
+│                                                             │
+│   ┌───────────────────┐      ┌───────────────────────────┐ │
+│   │  🔴 ADMIN ROLE    │      │  🔵 VIEWER ROLE           │ │
+│   │                   │      │                            │ │
+│   │  / Dashboard      │      │  / Dashboard               │ │
+│   │  /api/data        │      │  /api/data                 │ │
+│   │  /admin  ✓        │      │  /admin  ✗ Forbidden       │ │
+│   └───────────────────┘      └───────────────────────────┘ │
+└─────────────────────────────────────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│                 📋 GOOGLE CLOUD LOGGING                     │
+│         Every request logged with user + timestamp          │
+└─────────────────────────────────────────────────────────────┘
+```
 
 ## 🔑 Access Control
 
@@ -64,16 +105,6 @@ Internet
 | Audit | Cloud Logging | Logs every action |
 
 ---
-
-## 📸 Screenshots
-
-### ✅ Authorized Access — Zero Trust Dashboard
-![Portal](Zero-Trust-Portal.jpeg)
-
-<br/>
-
-### ⛔ Unauthorized Access — Blocked by IAP
-![Denied](Deny%20for%20the%20Unzuthrized%20Acess.png)
 
 ---
 
