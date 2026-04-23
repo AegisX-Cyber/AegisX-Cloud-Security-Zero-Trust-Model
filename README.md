@@ -6,7 +6,7 @@
 
 <br/><br/>
 
-# 🔒 Zero Trust Security Model
+# Zero Trust Security Model
 ### Built on Google Cloud Platform
 
 ![](https://img.shields.io/badge/Platform-Google%20Cloud-4285F4?style=for-the-badge&logo=googlecloud&logoColor=white)
